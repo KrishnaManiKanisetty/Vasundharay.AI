@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- PWA Manifest -->
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="theme-color" content="#2e7d32">
+
+<!-- Enable Add to Home Screen -->
+<script>
+  let deferredPrompt;
+
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    // Show install button
+    document.getElementById('installBtn')?.classList.remove('hidden');
+  });
+
+  window.addEventListener('appinstalled', () => {
+    console.log('App installed');
+  });
+</script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Predict Crop Yield - V.A.I</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .yield-result {
+            background: #e8f5e9;
+            border: 1px solid #81c784;
+            padding: 1.2rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+            font-weight: 500;
+            color: #2e7d32;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <svg class="logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M7 20h10"/>
+                        <path d="M10 20c5.5-2.5.8-6.4 3-10"/>
+                        <path d="M9.5 9.4c1.1.8 1.8 2.2 2.3 3.7-2 .4-3.5.4-4.8-.3-1.2-.6-2.3-1.9-3-4.2 2.8-.5 4.4 0 5.5.8z"/>
+                        <path d="M14.1 6a7 7 0 0 0-1.1 4c1.9-.1 3.3-.7 4.3-1.4 1-1.1 1.6-2.7 1.7-4.6-2.7.1-4 1-4.9 2z"/>
+                    </svg>
+                    <h1 class="logo-text">V.A.I<span class="emoji">🌱</span></h1>
+                </div>
+                <nav class="nav">
+                    <a href="index.html" class="nav-link">Back</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main class="main">
+        <div class="container">
+            <div class="hero">
+                <h2 class="hero-title">Predict Your Crop Yield</h2>
+                <p class="hero-description">
+                    Enter your farm's soil and climate data to get an AI-powered estimate 
+                    of your expected harvest yield. Optimize for better results.
+                </p>
+            </div>
+
+            <div class="form-card">
+                <form id="yieldForm" class="crop-form">
+                    <div class="form-grid">
+                        <div class="input-group">
+                            <label for="nitrogen" class="input-label">Nitrogen (N)</label>
+                            <input type="number" id="nitrogen" placeholder="0-200" min="0" max="200" class="input-field" required>
+                        </div>
+                        <div class="input-group">
+                            <label for="phosphorus" class="input-label">Phosphorus (P)</label>
+                            <input type="number" id="phosphorus" placeholder="0-200" min="0" max="200" class="input-field" required>
+                        </div>
+                        <div class="input-group">
+                            <label for="potassium" class="input-label">Potassium (K)</label>
+                            <input type="number" id="potassium" placeholder="0-200" min="0" max="200" class="input-field" required>
+                        </div>
+                        <div class="input-group">
+                            <label for="ph" class="input-label">Soil pH</label>
+                            <input type="number" id="ph" step="0.1" min="0" max="14" placeholder="5.5-7.0" class="input-field" required>
+                        </div>
+                        <div class="input-group">
+                            <label for="temperature" class="input-label">Temperature (°C)</label>
+                            <input type="number" id="temperature" min="-10" max="60" placeholder="25" class="input-field" required>
+                        </div>
+                        <div class="input-group">
+                            <label for="humidity" class="input-label">Humidity (%)</label>
+                            <input type="number" id="humidity" min="0" max="100" placeholder="70" class="input-field" required>
+                        </div>
+                        <div class="input-group">
+                            <label for="rainfall" class="input-label">Rainfall (mm)</label>
+                            <input type="number" id="rainfall" min="0" max="5000" placeholder="1000" class="input-field" required>
+                        </div>
+                    </div>
+
+                    <div class="button-group">
+                        <button type="submit" class="submit-btn">📊 Predict Yield</button>
+                    </div>
+                </form>
+
+                <!-- Result Display -->
+                <div id="yieldResult" class="yield-result">
+                    Expected Yield: <strong id="yieldValue">0.0</strong> tons/hectare
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <p>© 2025 Vasundara.AI.in. Empowering farmers with AI-driven insights.</p>
+            </div>
+        </div>
+    </footer>
+<div class="input-group">
+    <label for="crop" class="input-label">Crop Type</label>
+    <select id="crop" class="input-field" required>
+        <option value="rice">Rice</option>
+        <option value="wheat">Wheat</option>
+        <option value="maize">Maize</option>
+        <option value="cotton">Cotton</option>
+        <option value="millets">Millets</option>
+    </select>
+</div>
+    <script>
+        document.getElementById('yieldForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const formData = {
+                nitrogen: +document.getElementById('nitrogen').value,
+                phosphorus: +document.getElementById('phosphorus').value,
+                potassium: +document.getElementById('potassium').value,
+                ph: +document.getElementById('ph').value,
+                temperature: +document.getElementById('temperature').value,
+                humidity: +document.getElementById('humidity').value,
+                rainfall: +document.getElementById('rainfall').value,
+                 crop: +document.getElementById('crop').value
+            };
+
+            try {
+                const response = await fetch('http://localhost:5001/predict-yield', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData)
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    document.getElementById('yieldValue').textContent = result.predicted_yield_ton_per_hectare;
+                    document.getElementById('yieldResult').style.display = 'block';
+                } else {
+                    alert("Error: " + result.error);
+                }
+            } catch (err) {
+                alert("Failed to connect to AI model. Is the server running?");
+                console.error(err);
+            }
+        });
+const result = await response.json();
+if (result.success) {
+    document.getElementById('yieldValue').textContent = result.predicted_yield_ton_per_hectare;
+    document.getElementById('yieldResult').style.display = 'block';
+}
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/onnxruntime-web/dist/ort.min.js"></script>
+    <!-- Load ONNX Runtime Web -->
+<script src="https://cdn.jsdelivr.net/npm/onnxruntime-web/dist/ort.min.js"></script>
+
+<script>
+// ✅ Global variable to hold the ONNX model
+let ortSession = null;
+
+// 🔧 Function: Load the ONNX model once
+async function loadModel() {
+    try {
+        // Load model from your server (upload yield_predictor.onnx to same folder)
+        ortSession = await ort.InferenceSession.create('yield_model.onnx');
+        console.log('✅ ONNX model loaded successfully!');
+    } catch (err) {
+        console.error('❌ Failed to load ONNX model:', err);
+        alert('Failed to load AI model. Please check if yield_model.onnx is uploaded.');
+    }
+}
+
+// 🚀 Function: Predict yield using ONNX
+async function predictYield(nitrogen, phosphorus, potassium, ph, temperature, humidity, rainfall) {
+    if (!ortSession) {
+        throw new Error("Model not loaded");
+    }
+
+    // Prepare input data as Float32Array
+    const inputData = new Float32Array([
+        nitrogen, phosphorus, potassium, ph, temperature, humidity, rainfall
+    ]);
+
+    // Create ONNX runtime tensor: [batch_size, num_features]
+    const inputTensor = new ort.Tensor('float32', inputData, [1, 7]);
+
+    // Run inference
+    const inputName = ortSession.inputNames[0];
+    const outputName = ortSession.outputNames[0];
+
+    const results = await ortSession.run({ [inputName]: inputTensor });
+    return results[outputName].data[0]; // Return predicted yield
+}
+
+// 📥 Form Submission Handler
+document.getElementById('yieldForm').addEventListener('submit', async function (e) {
+    e.preventDefault();
+
+    // Get values from form
+    const nitrogen = +document.getElementById('nitrogen').value;
+    const phosphorus = +document.getElementById('phosphorus').value;
+    const potassium = +document.getElementById('potassium').value;
+    const ph = +document.getElementById('ph').value;
+    const temperature = +document.getElementById('temperature').value;
+    const humidity = +document.getElementById('humidity').value;
+    const rainfall = +document.getElementById('rainfall').value;
+
+    try {
+        // Show loading
+        document.getElementById('yieldValue').textContent = '...';
+        document.getElementById('yieldResult').style.display = 'block';
+
+        // Make prediction
+        const yieldValue = await predictYield(
+            nitrogen, phosphorus, potassium, ph, temperature, humidity, rainfall
+        );
+
+        // Display result
+        document.getElementById('yieldValue').textContent = yieldValue.toFixed(2);
+    } catch (err) {
+        console.error("Prediction error:", err);
+        document.getElementById('yieldValue').textContent = 'Error';
+        alert("Prediction failed. Please try again.");
+    }
+});
+
+// 🚀 Load model when page loads
+window.addEventListener('load', loadModel);
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js')
+    .then(() => console.log('✅ SW registered'))
+    .catch(err => console.log('❌ SW error:', err));
+}
+</script>
+
+</body>
+</html>

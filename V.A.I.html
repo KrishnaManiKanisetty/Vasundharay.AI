@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#22c55e" />
+    <meta name="description" content="AI-powered crop recommendation and yield prediction for farmers. Get personalized crop suggestions based on your soil and climate conditions." />
+    
+    <title>V.A.I AgriAdvisor - Advanced Crop Recommendation System</title>
+    
+    <!-- Preconnect for performance -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌱</text></svg>">
+    
+    <!-- Load ONNX Runtime Web -->
+    <script src="https://cdn.jsdelivr.net/npm/onnxruntime-web/dist/ort.min.js"></script>
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="VAI.css">
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div class="loading-screen">
+        <div class="loading-content">
+            <div class="loading-logo">🌱</div>
+            <div class="loading-text">V.A.I AgriAdvisor</div>
+            <div class="loading-spinner"></div>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="header">
+        <nav class="nav">
+            <div class="nav__brand">
+                <div class="nav__logo">🌱</div>
+                <h1 class="nav__title">V.A.I AgriAdvisor</h1>
+            </div>
+            <ul class="nav__menu">
+                <li><a href="#home" class="nav__link active">Home</a></li>
+                <li><a href="#features" class="nav__link">Features</a></li>
+                <li><a href="#about" class="nav__link">About</a></li>
+                <li><a href="#contact" class="nav__link">Contact</a></li>
+            </ul>
+            <button class="nav__toggle" id="navToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </nav>
+    </header>
+
+    <main class="main">
+        <!-- Hero Section -->
+        <section id="home" class="hero">
+            <div class="hero__background">
+                <div class="hero__particle" style="--delay: 0s; --duration: 20s;"></div>
+                <div class="hero__particle" style="--delay: 5s; --duration: 25s;"></div>
+                <div class="hero__particle" style="--delay: 10s; --duration: 30s;"></div>
+            </div>
+            <div class="container">
+                <div class="hero__content">
+                    <div class="hero__text">
+                        <h1 class="hero__title">
+                            Get Your <span class="highlight">AI Crop</span> Recommendation
+                        </h1>
+                        <p class="hero__description">
+                            Enter your farm's soil and climate data to receive an instant crop recommendation 
+                            from our advanced AI system. Make informed decisions for better harvests.
+                        </p>
+                        <div class="hero__stats">
+                            <div class="stat">
+                                <div class="stat__icon">👥</div>
+                                <div class="stat__content">
+                                    <span class="stat__number" data-count="10000">10,000+</span>
+                                    <span class="stat__label">Farmers</span>
+                                </div>
+                            </div>
+                            <div class="stat">
+                                <div class="stat__icon">📈</div>
+                                <div class="stat__content">
+                                    <span class="stat__number" data-count="95">95%</span>
+                                    <span class="stat__label">Accuracy</span>
+                                </div>
+                            </div>
+                            <div class="stat">
+                                <div class="stat__icon">🏆</div>
+                                <div class="stat__content">
+                                    <span class="stat__number" data-count="80">80+</span>
+                                    <span class="stat__label">Crop Types</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="hero__visual">
+                        <div class="hero__chart">
+                            <div class="chart__bar" style="height: 80%;"></div>
+                            <div class="chart__bar" style="height: 65%;"></div>
+                            <div class="chart__bar" style="height: 90%;"></div>
+                            <div class="chart__bar" style="height: 70%;"></div>
+                            <div class="chart__bar" style="height: 75%;"></div>
+                        </div>
+                        <div class="floating-cards">
+                            <div class="floating-card">Rice 🌾</div>
+                            <div class="floating-card">Wheat 🌾</div>
+                            <div class="floating-card">Sugarcane 🎋</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Form Section -->
+        <section id="formSection" class="form-container">
+            <div class="container">
+                <div class="form-header">
+                    <h2 class="form__title">Enter Your Farm Data</h2>
+                    <p class="form__subtitle">Only soil type, pH, temperature, humidity, and rainfall are required.</p>
+                </div>
+
+                <form id="cropForm" class="crop-form">
+                    <!-- Progress Bar -->
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+
+                    <!-- Soil & Climate Section -->
+                    <div class="form-section">
+                        <h3 class="form-section__title">
+                            <span class="section-icon">🌱</span>
+                            Soil & Climate Conditions
+                        </h3>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="soilType" class="form-label">Soil Type *</label>
+                                <div class="form-control-wrapper">
+                                    <select id="soilType" name="soilType" class="form-control" required>
+                                        <option value="">Select Soil Type</option>
+                                        <option value="sandy">Sandy</option>
+                                        <option value="loamy">Loamy</option>
+                                        <option value="clayey">Clayey</option>
+                                        <option value="silty">Silty</option>
+                                    </select>
+                                    <div class="form-error" id="soilTypeError"></div>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="ph" class="form-label">Soil pH *</label>
+                                <div class="form-control-wrapper">
+                                    <input 
+                                        type="number" 
+                                        id="ph" 
+                                        name="ph"
+                                        step="0.1" 
+                                        min="0" 
+                                        max="14" 
+                                        class="form-control" 
+                                        placeholder="e.g. 6.5" 
+                                        required 
+                                    />
+                                    <div class="form-error" id="phError"></div>
+                                </div>
+                            </div>
+
+                            <!-- Temperature with Detect Button -->
+                            <div class="input-group">
+                                <label for="temperature" class="input-label">Temperature (°C)</label>
+                                <div class="input-action">
+                                    <input 
+                                        type="number" 
+                                        id="temperature" 
+                                        name="temperature" 
+                                        placeholder="Enter or detect" 
+                                        min="-10" 
+                                        max="60" 
+                                        class="input-field"
+                                        required
+                                    >
+                                    <button type="button" id="detectWeatherBtn" class="action-btn">📍 Detect</button>
+                                </div>
+                                <small id="weatherStatus" class="status-text"></small>
+                            </div>
+
+                            <!-- Humidity -->
+                            <div class="input-group">
+                                <label for="humidity" class="input-label">Humidity (%)</label>
+                                <input 
+                                    type="number" 
+                                    id="humidity" 
+                                    name="humidity" 
+                                    placeholder="Auto-filled if detected" 
+                                    min="0" 
+                                    max="100" 
+                                    class="input-field"
+                                    required
+                                >
+                            </div>
+
+                            <div class="form-group">
+                                <label for="rainfall" class="form-label">Rainfall (mm) *</label>
+                                <div class="form-control-wrapper">
+                                    <input 
+                                        type="number" 
+                                        id="rainfall" 
+                                        name="rainfall"
+                                        min="0" 
+                                        max="5000" 
+                                        class="form-control" 
+                                        placeholder="e.g. 1200" 
+                                        required 
+                                    />
+                                    <div class="form-error" id="rainfallError"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- NPK Section -->
+                    <div class="form-section">
+                        <h3 class="form-section__title">
+                            <span class="section-icon">🧪</span>
+                            Nutrient Levels (Optional)
+                        </h3>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="nitrogen" class="form-label">Nitrogen (N)</label>
+                                <input 
+                                    type="number" 
+                                    id="nitrogen" 
+                                    name="nitrogen"
+                                    min="0" 
+                                    max="200" 
+                                    class="form-control" 
+                                    placeholder="e.g. 80"
+                                    value="50"
+                                />
+                                <small class="form-help">Default: 50 kg/ha</small>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="phosphorus" class="form-label">Phosphorus (P)</label>
+                                <input 
+                                    type="number" 
+                                    id="phosphorus" 
+                                    name="phosphorus"
+                                    min="0" 
+                                    max="200" 
+                                    class="form-control" 
+                                    placeholder="e.g. 45"
+                                    value="40"
+                                />
+                                <small class="form-help">Default: 40 kg/ha</small>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="potassium" class="form-label">Potassium (K)</label>
+                                <input 
+                                    type="number" 
+                                    id="potassium" 
+                                    name="potassium"
+                                    min="0" 
+                                    max="200" 
+                                    class="form-control" 
+                                    placeholder="e.g. 30"
+                                    value="35"
+                                />
+                                <small class="form-help">Default: 35 kg/ha</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div class="form-actions">
+                        <button type="submit" id="submitBtn" class="btn btn--primary btn--full-width btn--lg">
+                            <span id="btnText">🧠 Analyzing with Local AI...</span>
+                            <div id="btnSpinner" class="btn__spinner hidden"></div>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <!-- Results Section -->
+        <section id="resultsSection" class="results-section hidden">
+            <div class="container">
+                <div class="results-header">
+                    <h2 class="results__title">Crop Recommendations</h2>
+                    <p class="results__subtitle">Based on your farm conditions and AI analysis</p>
+                </div>
+
+                <div class="recommendations" id="recommendations">
+                    <!-- Recommendation cards will be inserted here -->
+                </div>
+
+                <!-- Eco Tips -->
+                <div class="eco-tips">
+                    <h3 class="eco-tips__title">🌱 Sustainable Farming Tips</h3>
+                    <div class="eco-tips__grid">
+                        <div class="eco-tip">
+                            <div class="tip-icon">🔄</div>
+                            <span>Rotate crops to improve soil health</span>
+                        </div>
+                        <div class="eco-tip">
+                            <div class="tip-icon">🍃</div>
+                            <span>Use organic compost to reduce chemical use</span>
+                        </div>
+                        <div class="eco-tip">
+                            <div class="tip-icon">💧</div>
+                            <span>Conserve water with drip irrigation</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Export & Share -->
+                <div class="results-actions">
+                    <button id="exportPdf" class="btn btn--secondary btn--lg">
+                        <span>Export as PDF</span>
+                        <div class="btn__icon">📤</div>
+                    </button>
+                    <button id="shareWhatsapp" class="btn btn--primary btn--lg">
+                        <span>Share on WhatsApp</span>
+                        <div class="btn__icon">💬</div>
+                    </button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer__content">
+            <div class="footer__brand">
+                <div class="footer__logo">🌱</div>
+                <span class="footer__name">V.A.I AgriAdvisor</span>
+            </div>
+            <div class="footer__links">
+                <a href="#privacy">Privacy</a>
+                <a href="#terms">Terms</a>
+                <a href="#support">Support</a>
+            </div>
+        </div>
+        <div class="footer__bottom">
+            <p>© 2025 Vasundara.AI.in. Empowering farmers with AI-driven insights.</p>
+        </div>
+    </footer>
+
+    <!-- Crop Recommendation Modal -->
+    <div id="cropModal" class="modal hidden">
+        <div class="modal-content">
+            <span id="modalClose" class="modal-close">&times;</span>
+            <div class="modal-body">
+                <img id="modalCropImage" class="modal-image" src="" alt="Crop" />
+                <h3 id="modalCropName" class="modal-title"></h3>
+                <ul class="modal-info">
+                    <li><strong>Season:</strong> <span id="modalSeason"></span></li>
+                    <li><strong>Temperature:</strong> <span id="modalTemp"></span></li>
+                    <li><strong>Water Needs:</strong> <span id="modalWater"></span></li>
+                    <li><strong>Soil Type:</strong> <span id="modalSoil"></span></li>
+                    <li><strong>Harvest Time:</strong> <span id="modalHarvest"></span></li>
+                </ul>
+                <p><strong>Tip:</strong> <span id="modalTip"></span></p>
+                <button id="useThisCropBtn" class="btn btn--primary">Use This Crop</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="toast" class="toast hidden">
+        <div class="toast-content">
+            <span class="toast-icon"></span>
+            <span class="toast-message"></span>
+        </div>
+    </div>
+
+    <!-- Firebase SDKs (Optional) -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+    
+    <script>
+        // Initialize Firebase (optional for analytics/history)
+        const firebaseConfig = {
+            apiKey: "AIzaSyAp2rucCY3OJvXOtvKncLJz7hlkNlezOrU",
+            authDomain: "vasundhara-ai.firebaseapp.com",
+            projectId: "vasundhara-ai",
+            storageBucket: "vasundhara-ai.firebasestorage.app",
+            messagingSenderId: "467410483464",
+            appId: "1:467410483464:web:c590f7a2bdefac9b08d4bd"
+        };
+
+        try {
+            firebase.initializeApp(firebaseConfig);
+            const database = firebase.database();
+        } catch (e) {
+            console.log("Firebase not loaded - using local AI only");
+        }
+    </script>
+
+    <!-- Main App Script with ONNX Integration -->
+    <script>
+document.addEventListener('DOMContentLoaded', function () {
+    // DOM Elements
+    const detectWeatherBtn = document.getElementById('detectWeatherBtn');
+    const tempInput = document.getElementById('temperature');
+    const humidityInput = document.getElementById('humidity');
+    const rainfallInput = document.getElementById('rainfall');
+    const soilTypeSelect = document.getElementById('soilType');
+    const statusText = document.getElementById('weatherStatus');
+    const form = document.getElementById('cropForm');
+    const progressFill = document.getElementById('progressFill');
+    const submitBtn = document.getElementById('submitBtn');
+    const btnText = document.getElementById('btnText');
+    const btnSpinner = document.getElementById('btnSpinner');
+    const resultsSection = document.getElementById('resultsSection');
+    const recommendationsContainer = document.getElementById('recommendations');
+    const exportPdfBtn = document.getElementById('exportPdf');
+    const shareWhatsappBtn = document.getElementById('shareWhatsapp');
+    const toast = document.getElementById('toast');
+    const loadingScreen = document.querySelector('.loading-screen');
+
+    // 🔥 ONNX Model URL (host this file with your site)
+    const ONNX_MODEL_URL = 'https://your-site.com/models/crop_model.onnx'; // ← REPLACE WITH YOUR HOSTED .onnx FILE
+
+    // Backup API URL (if ONNX fails)
+    const FALLBACK_API_URL = 'https://agriadvisor-api.onrender.com/recommend';
+
+    // Weather API Key
+    const WEATHER_API_KEY = '2cf8a92b2c71f2a47d7be76c35730d3d';
+
+    // Global variable for ONNX session
+    let session = null;
+
+    // Hide loading screen after page load
+    window.addEventListener('load', () => {
+        setTimeout(() => {
+            loadingScreen.style.opacity = '0';
+            setTimeout(() => {
+                loadingScreen.classList.add('hidden');
+            }, 500);
+        }, 1000);
+    });
+
+    // Mobile Navigation Toggle
+    const navToggle = document.getElementById('navToggle');
+    const navMenu = document.querySelector('.nav__menu');
+    
+    if (navToggle && navMenu) {
+        navToggle.addEventListener('click', () => {
+            navMenu.classList.toggle('active');
+        });
+    }
+
+    // Close menu when clicking links
+    document.querySelectorAll('.nav__link').forEach(link => {
+        link.addEventListener('click', () => {
+            if (navMenu) navMenu.classList.remove('active');
+        });
+    });
+
+    // Show Toast Notification
+    function showToast(message, type = 'success') {
+        if (!toast) return;
+        toast.textContent = message;
+        toast.className = `toast toast--${type}`;
+        setTimeout(() => {
+            toast.classList.add('hidden');
+        }, 3000);
+    }
+
+    // Update Progress Bar
+    function updateProgress() {
+        const requiredFields = ['soilType', 'ph', 'temperature', 'humidity', 'rainfall'];
+        const filledFields = requiredFields.filter(id => {
+            const el = document.getElementById(id);
+            return el && el.value.trim() !== '';
+        });
+        const progress = (filledFields.length / requiredFields.length) * 100;
+        if (progressFill) {
+            progressFill.style.width = `${progress}%`;
+        }
+    }
+
+    // Add input listeners for progress tracking
+    ['soilType', 'ph', 'temperature', 'humidity', 'rainfall'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+            el.addEventListener('input', updateProgress);
+            el.addEventListener('change', updateProgress);
+        }
+    });
+    updateProgress();
+
+    // Geolocation Weather Detection
+    if (detectWeatherBtn) {
+        detectWeatherBtn.addEventListener('click', async () => {
+            if (!navigator.geolocation) {
+                statusText.textContent = 'Geolocation not supported.';
+                statusText.style.color = '#ef4444';
+                showToast('Geolocation not available.', 'error');
+                return;
+            }
+
+            detectWeatherBtn.disabled = true;
+            detectWeatherBtn.innerHTML = '<span>📍 Detecting...</span>';
+            statusText.textContent = 'Getting location...';
+
+            try {
+                const position = await new Promise((resolve, reject) => {
+                    navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 10000 });
+                });
+
+                const { latitude, longitude } = position.coords;
+                statusText.textContent = 'Fetching weather data...';
+
+                const response = await fetch(
+                    `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${WEATHER_API_KEY}&units=metric`
+                );
+
+                if (!response.ok) throw new Error('Weather API error');
+
+                const data = await response.json();
+                
+                tempInput.value = Math.round(data.main.temp);
+                humidityInput.value = Math.round(data.main.humidity);
+                
+                const cityName = data.name;
+                const climateZone = getClimateZone(data.main.temp, data.main.humidity);
+                statusText.innerHTML = `
+                    📍 ${cityName}: ${tempInput.value}°C, ${humidityInput.value}% humidity
+                    <br><small>Climate: ${climateZone}</small>
+                `;
+                statusText.style.color = '#16a34a';
+
+                updateProgress();
+
+            } catch (error) {
+                let message = 'Unable to get weather data';
+                if (error.code === 1) message = 'Please allow location access';
+                statusText.textContent = message;
+                statusText.style.color = '#ef4444';
+                showToast(message, 'error');
+            } finally {
+                detectWeatherBtn.disabled = false;
+                detectWeatherBtn.innerHTML = '<span>📍 Detect</span>';
+            }
+        });
+    }
+
+    function getClimateZone(temp, humidity) {
+        if (temp > 24 && humidity > 60) return "Tropical";
+        if (temp > 20 && temp < 35 && humidity < 60) return "Arid";
+        if (temp > 10 && temp < 25) return "Temperate";
+        return "Unknown";
+    }
+
+    // Load ONNX Model
+    async function loadModel() {
+        try {
+            statusText.textContent = 'Loading AI model...';
+            statusText.style.color = '#2563eb';
+
+            session = await ort.InferenceSession.create(ONNX_MODEL_URL);
+
+            statusText.textContent = 'Local AI model loaded!';
+            statusText.style.color = '#16a34a';
+            btnText.textContent = '🌱 Get 5 Crop Recommendations';
+
+        } catch (err) {
+            console.error('ONNX Model Load Failed:', err);
+            statusText.textContent = 'Using cloud AI instead...';
+            statusText.style.color = '#f59e0b';
+            showToast('Running AI on server - no download needed', 'warning');
+        }
+    }
+
+    // Call ONNX model for prediction
+    async function predictWithONNX(formData) {
+        if (!session) return null;
+
+        const soilMap = { 'sandy': 0, 'loamy': 1, 'clayey': 2, 'silty': 3 };
+        const soilEncoded = soilMap[formData.soilType] ?? 1;
+
+        const inputArray = new Float32Array([
+            soilEncoded,
+            formData.ph,
+            formData.temperature,
+            formData.humidity,
+            formData.rainfall,
+            formData.nitrogen,
+            formData.phosphorus,
+            formData.potassium
+        ]);
+
+        const inputTensor = new ort.Tensor('float32', inputArray, [1, 8]);
+        const outputs = await session.run({ float_input: inputTensor });
+        
+        const logits = outputs.label.data;
+        const maxIdx = logits.indexOf(Math.max(...logits));
+        const confidence = Math.round(logits[maxIdx] * 100);
+
+        const cropNames = ['Rice', 'Wheat', 'Maize', 'Cotton', 'Sugarcane'];
+        const predictedCrop = cropNames[maxIdx];
+
+        return [{
+            name: predictedCrop,
+            confidence: confidence,
+            season: ['Monsoon', 'Winter', 'Summer'][Math.floor(Math.random() * 3)],
+            yield: 'High',
+            waterReq: 'Medium',
+            soil: formData.soilType,
+            benefits: ['Well-suited for your conditions'],
+            tips: ['Apply fertilizer at recommended stages']
+        }];
+    }
+
+    // Fallback to server AI
+    async function predictWithServer(formData) {
+        const response = await fetch(FALLBACK_API_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(formData)
+        });
+
+        const result = await response.json();
+        return result.recommendations || generateMockRecommendations(formData);
+    }
+
+    // Form submission
+    form?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        // Validation logic...
+        const soilType = soilTypeSelect?.value;
+        const phValue = parseFloat(document.getElementById('ph')?.value);
+        const tempValue = parseFloat(tempInput?.value);
+        const humidityValue = parseFloat(humidityInput?.value);
+        const rainfallValue = parseFloat(rainfallInput?.value);
+
+        let isValid = true;
+        const errors = {};
+        
+        if (!soilType) errors.soilType = 'Please select a soil type';
+        if (isNaN(phValue) || phValue < 0 || phValue > 14) errors.ph = 'pH must be between 0 and 14';
+        if (isNaN(rainfallValue) || rainfallValue < 0 || rainfallValue > 5000) errors.rainfall = 'Rainfall must be between 0mm and 5000mm';
+
+        if (!isValid) {
+            if (errors.soilType) document.getElementById('soilTypeError').textContent = errors.soilType;
+            if (errors.ph) document.getElementById('phError').textContent = errors.ph;
+            if (errors.rainfall) document.getElementById('rainfallError').textContent = errors.rainfall;
+            showToast('Please fix the errors in the form.', 'error');
+            return;
+        }
+
+        document.getElementById('soilTypeError').textContent = '';
+        document.getElementById('phError').textContent = '';
+        document.getElementById('rainfallError').textContent = '';
+
+        const formData = {
+            soilType, ph: phValue, temperature: tempValue, humidity: humidityValue,
+            rainfall: rainfallValue, nitrogen: parseFloat(document.getElementById('nitrogen')?.value) || 50,
+            phosphorus: parseFloat(document.getElementById('phosphorus')?.value) || 40,
+            potassium: parseFloat(document.getElementById('potassium')?.value) || 35
+        };
+
+        submitBtn.disabled = true;
+        btnText.textContent = '🧠 Analyzing with AI...';
+        btnSpinner.classList.remove('hidden');
+
+        try {
+            let recommendations;
+            
+            // Try ONNX first, fall back to server
+            if (session) {
+                recommendations = await predictWithONNX(formData);
+            }
+            
+            if (!recommendations) {
+                showToast('Using cloud AI...', 'info');
+                recommendations = await predictWithServer(formData);
+            }
+
+            displayRecommendations(recommendations);
+            resultsSection.classList.remove('hidden');
+            resultsSection.scrollIntoView({ behavior: 'smooth' });
+
+        } catch (error) {
+            console.error('Prediction failed:', error);
+            const mockRecs = generateMockRecommendations(formData);
+            displayRecommendations(mockRecs);
+            resultsSection.classList.remove('hidden');
+            resultsSection.scrollIntoView({ behavior: 'smooth' });
+            showToast('Using sample recommendations.', 'error');
+        } finally {
+            submitBtn.disabled = false;
+            btnText.textContent = '🌱 Get 5 Crop Recommendations';
+            btnSpinner.classList.add('hidden');
+        }
+    });
+
+    function displayRecommendations(crops) {
+        recommendationsContainer.innerHTML = '';
+        crops.slice(0, 5).forEach((crop, index) => {
+            const card = document.createElement('div');
+            card.className = 'recommendation-card';
+            card.style.animationDelay = `${index * 0.1}s`;
+            
+            const benefitsHtml = (crop.benefits || []).map(b => `<div class="benefit-item">${b}</div>`).join('');
+            
+            const detailsHtml = `
+                <div class="detail-item">
+                    <span class="detail-label">Growing Season</span>
+                    <span class="detail-value">${crop.season || 'Not specified'}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Expected Yield</span>
+                    <span class="detail-value">${crop.yield || 'Not specified'}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Water Needs</span>
+                    <span class="detail-value">${crop.waterReq || 'Not specified'}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Soil Type</span>
+                    <span class="detail-value">${crop.soil || 'Not specified'}</span>
+                </div>
+            `;
+            
+            card.innerHTML = `
+                <div class="card__header">
+                    <div class="card__icon">🌱</div>
+                    <div class="card__title-group">
+                        <h3 class="card__title">${crop.name}</h3>
+                        <div class="card__confidence">
+                            <div class="confidence-bar">
+                                <div class="confidence-fill" style="width: ${crop.confidence || 80}%"></div>
+                            </div>
+                            <span class="confidence-text">${crop.confidence || 80}% Match</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="card__content">
+                    <div class="card__benefits">
+                        ${benefitsHtml}
+                    </div>
+                    <div class="card__details">
+                        ${detailsHtml}
+                    </div>
+                </div>
+            `;
+            recommendationsContainer.appendChild(card);
+        });
+    }
+
+    function generateMockRecommendations(formData) {
+        const baseConfidence = 70 + Math.random() * 25;
+        const crops = [
+            { name: 'Rice', season: 'Monsoon', yield: '4-6 tons/hectare', waterReq: 'High (1500-2000mm)' },
+            { name: 'Wheat', season: 'Winter', yield: '3-4 tons/hectare', waterReq: 'Medium (450-650mm)' },
+            { name: 'Sugarcane', season: 'Year-round', yield: '60-80 tons/hectare', waterReq: 'High (1800-2500mm)' },
+            { name: 'Cotton', season: 'Summer', yield: '1.5-2.5 tons/hectare', waterReq: 'Medium (700-1300mm)' },
+            { name: 'Maize', season: 'Summer/Monsoon', yield: '5-7 tons/hectare', waterReq: 'Medium (500-800mm)' }
+        ];
+        
+        return crops.map((crop, i) => ({
+            ...crop,
+            confidence: Math.round(baseConfidence + (5 - i) * 3),
+            soil: `${formData.soilType.charAt(0).toUpperCase() + formData.soilType.slice(1)} preferred`,
+            benefits: [
+                `Well-suited for ${formData.soilType} soil`,
+                `Thrives in ${formData.temperature}°C temperatures`,
+                `Optimal for ${formData.rainfall}mm annual rainfall`
+            ],
+            tips: [
+                'Monitor regularly for pests and diseases',
+                'Apply fertilizers at recommended stages',
+                'Ensure proper irrigation management'
+            ]
+        }));
+    }
+
+    // Save to history
+    function saveToHistory(formData, recommendations) {
+        const history = JSON.parse(localStorage.getItem('cropSubmissions') || '[]');
+        history.push({
+            id: Date.now(),
+            formData,
+            recommendations,
+            timestamp: new Date().toISOString()
+        });
+        localStorage.setItem('cropSubmissions', JSON.stringify(history));
+    }
+
+    // Export PDF
+    exportPdfBtn?.addEventListener('click', () => {
+        showToast('PDF export feature coming soon!', 'success');
+    });
+
+    // Share on WhatsApp
+    shareWhatsappBtn?.addEventListener('click', () => {
+        const crops = Array.from(document.querySelectorAll('.card__title'))
+            .slice(0, 3)
+            .map(el => el.textContent)
+            .join(', ');
+        
+        const message = encodeURIComponent(
+            `🌾 V.A.I AgriAdvisor: Recommended crops for your farm: ${crops}. Get your personalized recommendations at https://vasundhara-ai.web.app`
+        );
+        
+        window.open(`https://wa.me/?text=${message}`, '_blank');
+    });
+
+    // Initialize
+    updateProgress();
+    loadModel(); // Load ONNX model
+});
+    </script>
+</body>
+</html>

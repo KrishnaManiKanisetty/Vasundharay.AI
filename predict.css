@@ -1,0 +1,158 @@
+:root{
+  --bg: #f4f7f3;
+  --card: #ffffff;
+  --muted: #6b6f76;
+  --accent: #3b9a55; /* green */
+  --accent-dark: #2f7a45;
+  --soft: #e9f4ea;
+  --glass: rgba(255,255,255,0.7);
+  --radius: 14px;
+  --shadow: 0 8px 30px rgba(20,30,20,0.08);
+  --maxw: 900px;
+}
+
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  background: linear-gradient(180deg,#ecf6ef 0%, #f7fbf8 100%);
+  color:#222;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:32px;
+}
+
+.page{width:100%;max-width:var(--maxw);}
+
+.card{
+  background:var(--card);
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+  transition:transform .22s ease;
+}
+
+.card:hover{transform:translateY(-6px)}
+
+.card-header{
+  background:
+    linear-gradient(90deg, rgba(59,154,85,0.06), rgba(59,154,85,0.02)),
+    url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="600" height="40"></svg>');
+  padding:18px 24px;
+  display:flex;
+  align-items:center;
+  justify-content:flex-start;
+}
+
+/* plants row - repeated SVG seedlings */
+.plants{
+  display:flex;
+  gap:14px;
+}
+.plant{
+  width:42px;
+  height:42px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  background:linear-gradient(180deg,var(--soft),#fff);
+  border-radius:8px;
+  box-shadow:0 6px 14px rgba(50,70,40,0.06);
+  padding:6px;
+  border:1px solid rgba(60,90,60,0.06);
+}
+
+/* body layout */
+.card-body{
+  display:flex;
+  gap:28px;
+  padding:28px;
+  align-items:flex-start;
+}
+
+/* left & right columns */
+.left{flex:1}
+.right{flex:1; border-left:1px dashed rgba(0,0,0,0.04); padding-left:24px}
+
+/* fields */
+.field{margin-bottom:18px}
+.field label{
+  display:block;
+  font-size:13px;
+  color:var(--muted);
+  margin-bottom:8px;
+}
+.value{
+  font-size:18px;
+  font-weight:600;
+  color:#16321f;
+  background:linear-gradient(180deg, #fbfff9, #f3fff6);
+  padding:12px 14px;
+  border-radius:10px;
+  border:1px solid rgba(40,80,40,0.06);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,0.4);
+}
+
+/* countdown style */
+.countdown{
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", monospace;
+  color:var(--accent-dark);
+  font-weight:700;
+  letter-spacing:0.8px;
+}
+
+/* tips and climate */
+.tips h2, .climate h2{margin:0 0 8px 0; font-size:15px; color:#12321f}
+.tips-list{margin:0;padding-left:18px;color:#234a2b}
+.climate-box{
+  background:var(--soft);
+  padding:12px;
+  border-radius:8px;
+  display:flex;
+  gap:12px;
+  align-items:center;
+}
+.temp{font-size:20px;font-weight:700}
+.desc{font-size:13px;color:var(--muted)}
+
+/* footer */
+.card-footer{
+  display:flex;
+  gap:12px;
+  padding:16px 24px;
+  align-items:center;
+  justify-content:flex-end;
+  border-top:1px solid rgba(0,0,0,0.04);
+  background:linear-gradient(180deg, rgba(0,0,0,0.01), rgba(0,0,0,0.02));
+}
+.btn{
+  background:var(--accent);
+  color:white;
+  border:none;
+  padding:10px 14px;
+  border-radius:10px;
+  font-weight:600;
+  cursor:pointer;
+  box-shadow:0 8px 18px rgba(40,100,60,0.12);
+}
+.btn.alt{
+  background:transparent;
+  color:var(--accent-dark);
+  border:1px solid rgba(30,100,60,0.08);
+  box-shadow:none;
+}
+
+/* small utilities & responsive */
+.sr-only{position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden}
+@media (max-width:720px){
+  .card-body{flex-direction:column}
+  .right{border-left:none;padding-left:0;border-top:1px dashed rgba(0,0,0,0.04);padding-top:18px;margin-top:8px}
+  .plants{gap:8px}
+  .plant{width:36px;height:36px}
+}

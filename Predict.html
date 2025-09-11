@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Vasundhara-AI • Crop Card</title>
+  <link rel="stylesheet" href="predict.css" />
+</head>
+<body>
+  <main class="page">
+    <section class="card" aria-labelledby="card-title">
+      <header class="card-header" role="img" aria-hidden="true">
+        <!-- Plant icons repetition -->
+        <div class="plants" id="plantsRow" aria-hidden="true">
+          <!-- JS will fill these if needed -->
+        </div>
+      </header>
+
+      <div class="card-body">
+        <h1 id="card-title" class="sr-only">Crop Overview</h1>
+
+        <div class="left">
+          <div class="field">
+            <label for="cropName">Crop Name</label>
+            <div id="cropName" class="value">Wheat</div>
+          </div>
+
+          <div class="field">
+            <label for="plantDate">Time of Plant</label>
+            <div id="plantDate" class="value">2025-08-01</div>
+          </div>
+
+          <div class="field">
+            <label for="timeLeft">Time left to harvest</label>
+            <div id="timeLeft" class="value countdown">-- : -- : -- : --</div>
+          </div>
+        </div>
+
+        <div class="right">
+          <div class="tips">
+            <h2>Farming Tips</h2>
+            <ul id="farmingTips" class="tips-list">
+              <li>Ensure balanced nitrogen application.</li>
+              <li>Use mulch to retain soil moisture.</li>
+            </ul>
+          </div>
+
+          <div class="climate">
+            <h2>Climate Now</h2>
+            <div id="climateNow" class="climate-box">
+              <div class="temp">28°C</div>
+              <div class="desc">Partly Cloudy</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer class="card-footer">
+        <button id="editBtn" class="btn">Edit</button>
+        <button id="demoBtn" class="btn alt">Demo: Load Sample</button>
+      </footer>
+    </section>
+  </main>
+
+  <script src="predict.js"></script>
+</body>
+</html>
